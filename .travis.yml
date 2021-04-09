@@ -1,34 +1,33 @@
-sudo: false
 language: php
+
+dist: bionic
 
 php:
   - 7.1
   - 7.2
   - 7.3
-  - 7.4snapshot
+  - 7.4
   - nightly
 
 cache:
   directories:
     - $HOME/.composer/cache
 
-script:
-  - ./vendor/bin/phpunit
-
 before_install:
   - travis_retry composer self-update
   - mv ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini{,.disabled} || echo "xdebug not available"
 
-install:
-  - composer install
+install: travis_retry composer install
+
+script: vendor/bin/phpunit
 
 jobs:
   allow_failures:
-    - php: 7.4snapshot
     - php: nightly
 
   include:
     - stage: Metrics and quality
+      php: 7.2
       env: CODE_STANDARD
       script:
         - ./vendor/bin/phpcs
